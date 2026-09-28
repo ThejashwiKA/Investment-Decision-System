@@ -126,8 +126,13 @@ MarketMind/
 │   └── .gitignore
 │
 ├── frontend/
-│   ├── index.html
-│   ├── app.js
+│   ├── analysis.html
+│   ├── analysis.js
+│   └── home.js
+│   └── index.html
+│   └── news.html
+│   └── news.js
+│   └── shared.js
 │   └── style.css
 │
 └── README.md

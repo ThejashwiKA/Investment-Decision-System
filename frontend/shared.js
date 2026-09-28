@@ -1,4 +1,4 @@
-// shared.js — MarketMind: navigation, stock selector, and API helpers
+// shared.js — MarketMind: navigation, stock selector, search, and API helpers
 // used across index.html / analysis.html / news.html
 
 const API_BASE = "http://localhost:8080";
@@ -40,8 +40,9 @@ async function apiPost(path, body) {
   return res.json();
 }
 
-// Renders the shared masthead + nav + stock selector into #mm-nav.
+// Renders the shared masthead + nav + search + stock selector into #mm-nav.
 // activePage is one of "home" | "analysis" | "news".
+// The "Watching" selector is hidden on the home page.
 function renderNav(activePage) {
   const mount = document.getElementById("mm-nav");
   if (!mount) return;
@@ -51,6 +52,14 @@ function renderNav(activePage) {
     (s) =>
       `<option value="${s.id}" ${s.id === selected ? "selected" : ""}>${s.symbol} — ${s.name}</option>`
   ).join("");
+
+  const selector =
+    activePage === "home"
+      ? ""
+      : `<label class="stock-select">
+          <span>Watching</span>
+          <select id="mm-stock-select">${options}</select>
+        </label>`;
 
   mount.innerHTML = `
     <div class="masthead">
@@ -64,16 +73,85 @@ function renderNav(activePage) {
         <a href="analysis.html" class="${activePage === "analysis" ? "active" : ""}">Analysis</a>
         <a href="news.html" class="${activePage === "news" ? "active" : ""}">News</a>
       </nav>
-      <label class="stock-select">
-        <span>Watching</span>
-        <select id="mm-stock-select">${options}</select>
-      </label>
+      <div class="nav-tools">
+        <div class="stock-search">
+          <input id="mm-search" type="search" placeholder="Search stock or symbol" autocomplete="off" aria-label="Search stocks" />
+          <ul id="mm-search-results" class="search-results" hidden></ul>
+        </div>
+        ${selector}
+      </div>
     </div>
   `;
 
-  document.getElementById("mm-stock-select").addEventListener("change", (e) => {
-    setSelectedStockId(e.target.value);
-    window.dispatchEvent(new CustomEvent("mm:stock-changed", { detail: Number(e.target.value) }));
+  const select = document.getElementById("mm-stock-select");
+  if (select) {
+    select.addEventListener("change", (e) => {
+      setSelectedStockId(e.target.value);
+      window.dispatchEvent(new CustomEvent("mm:stock-changed", { detail: Number(e.target.value) }));
+    });
+  }
+
+  setupSearch(activePage);
+}
+
+// Search: type a symbol or company name, click a result or press Enter.
+// From Home/Analysis it opens Analysis; from News it stays on News.
+function setupSearch(activePage) {
+  const input = document.getElementById("mm-search");
+  const list = document.getElementById("mm-search-results");
+  if (!input || !list) return;
+
+  const target = activePage === "news" ? "news.html" : "analysis.html";
+
+  function matchesFor(query) {
+    const q = query.trim().toLowerCase();
+    return STOCKS.filter(
+      (s) => s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)
+    );
+  }
+
+  function go(id) {
+    setSelectedStockId(id);
+    window.location.href = target;
+  }
+
+  function render() {
+    if (!input.value.trim()) {
+      list.hidden = true;
+      return;
+    }
+    const matches = matchesFor(input.value);
+    list.hidden = false;
+    list.innerHTML = matches.length
+      ? matches
+          .map((s) => `<li data-id="${s.id}"><span class="mono">${s.symbol}</span> ${s.name}</li>`)
+          .join("")
+      : `<li class="search-empty">No matching stock</li>`;
+  }
+
+  input.addEventListener("input", render);
+  input.addEventListener("focus", render);
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const matches = matchesFor(input.value);
+      if (matches.length) go(matches[0].id);
+    } else if (e.key === "Escape") {
+      list.hidden = true;
+    }
+  });
+
+  // mousedown fires before the input loses focus, so the click can't be lost
+  list.addEventListener("mousedown", (e) => {
+    const item = e.target.closest("li[data-id]");
+    if (item) {
+      e.preventDefault();
+      go(item.dataset.id);
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".stock-search")) list.hidden = true;
   });
 }
 

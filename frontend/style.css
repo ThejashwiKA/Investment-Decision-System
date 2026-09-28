@@ -114,11 +114,17 @@ select:focus-visible {
 }
 
 .stock-select select {
-    font-family: 'IBM Plex Mono', monospace;
-    background: transparent;
-    border: 1px solid var(--rule);
-    padding: 0.3rem 0.5rem;
-    color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  padding: 0.3rem 0.5rem;
+  color: var(--ink);
+  color-scheme: dark;
+}
+
+.stock-select select option {
+  background: var(--paper-deep);
+  color: var(--ink);
 }
 
 main {
@@ -368,3 +374,35 @@ footer {
         padding: 0.6rem 1.25rem;
     }
 }
+
+.nav-tools { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+.stock-search { position: relative; }
+.stock-search input {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  color-scheme: dark;
+  padding: 0.35rem 0.6rem;
+  width: 220px;
+}
+.stock-search input::placeholder { color: var(--muted); }
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  z-index: 10;
+}
+.search-results li { padding: 0.5rem 0.6rem; font-size: 0.85rem; cursor: pointer; }
+.search-results li:hover { background: var(--rule); }
+.search-results .search-empty { color: var(--muted); cursor: default; }
+.search-results .search-empty:hover { background: transparent; }
