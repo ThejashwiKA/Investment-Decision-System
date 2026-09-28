@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MarketMind — News</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="mm-nav"></div>
+<main>
+  <div id="mm-error" class="error-banner" hidden></div>
+  <section class="section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:0.75rem;">
+      <h1 id="mm-title" class="section__heading">News</h1>
+      <button id="refresh-btn" class="action">Refresh</button>
+    </div>
+    <div id="news-grid" class="news-grid"></div>
+    <div id="news-empty" class="empty-state" hidden>No news stored for this stock yet.</div>
+  </section>
+</main>
+<footer>MarketMind — Spring Boot · FastAPI · PostgreSQL</footer>
+<script src="shared.js"></script>
+<script src="news.js"></script>
+</body>
+</html>

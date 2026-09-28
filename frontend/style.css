@@ -1,1271 +1,370 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 :root {
-    --bg-base: #050505;
-    --bg-card: rgba(15, 15, 15, 0.85);
-    --bg-card-hover: rgba(25, 25, 25, 0.95);
-    --bg-input: #0A0A0A;
-
-    --text-primary: #FFFFFF;
-    --text-secondary: rgba(255, 255, 255, 0.6);
-    --text-muted: rgba(255, 255, 255, 0.3);
-
-    --color-buy: #089981;
-    --color-buy-bg: rgba(8, 153, 129, 0.1);
-    --color-sell: #F23645;
-    --color-sell-bg: rgba(242, 54, 69, 0.1);
-    --color-hold: #B2B5BE;
-    --color-hold-bg: rgba(178, 181, 190, 0.1);
-
-    --accent: #FFFFFF;
-    --accent-hover: #000000;
-
-    --border: rgba(255, 255, 255, 0.1);
-    --border-light: rgba(255, 255, 255, 0.2);
-
-    --radius: 0px;
-    --font-main: 'Inter', -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-pixel: 'Teko', 'Impact', sans-serif;
-    --transition: 0.2s ease;
+    --paper: #0B0E14;
+    --paper-deep: #11151D;
+    --ink: #E6E8EB;
+    --muted: #8B93A1;
+    --rule: #262B33;
+    --up: #22C55E;
+    --down: #EF4444;
+    --neutral: #F5A623;
 }
-
-
-/* =========================================================
-   RESET
-   ========================================================= */
 
 * {
     box-sizing: border-box;
+}
+
+html,
+body {
     margin: 0;
     padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
 }
 
-
-/* =========================================================
-   HTML / BODY
-   ========================================================= */
-
-html {
-    min-height: 100%;
+h1,
+h2,
+h3,
+.serif {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    margin: 0;
 }
 
-body {
-    min-height: 100vh;
-
-    background-color: var(--bg-base);
-
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-
-    background-size: 40px 40px;
-
-    color: var(--text-primary);
-    font-family: var(--font-main);
-    line-height: 1.5;
-
-    -webkit-font-smoothing: antialiased;
+.mono,
+.price,
+table,
+.ticker {
+    font-family: 'IBM Plex Mono', monospace;
 }
 
+a {
+    color: var(--ink);
+    text-decoration: none;
+}
 
-/* =========================================================
-   MAIN APP CONTAINER
-   ========================================================= */
+a:hover {
+    text-decoration: underline;
+}
 
-.app-container {
-    width: 100%;
-    max-width: 1200px;
+a:focus-visible,
+button:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
 
-    margin: 0 auto;
-    padding: 24px;
-
+.masthead {
     display: flex;
-    flex-direction: column;
-
-    gap: 24px;
-
-    min-height: 100vh;
-
-    /*
-     * Important:
-     * Prevent children from expanding the main container.
-     */
-    min-width: 0;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 1.5rem 2rem 0.75rem;
+    border-bottom: 3px double var(--ink);
 }
 
+.masthead__title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
 
-/* =========================================================
-   HEADER
-   ========================================================= */
+.masthead__rule {
+    color: var(--rule);
+}
 
-.top-section {
+.masthead__tagline {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.nav-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    padding-bottom: 16px;
-
-    border-bottom: 1px solid var(--border);
-
-    min-width: 0;
+    padding: 0.6rem 2rem;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
+.nav-links {
+    display: flex;
+    gap: 1.25rem;
+}
 
-.logo {
+.nav-links a {
+    font-size: 0.9rem;
+    padding-bottom: 2px;
+}
+
+.nav-links a.active {
+    border-bottom: 2px solid var(--ink);
+}
+
+.stock-select {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
 }
 
-.logo-icon {
-    color: var(--accent);
-    font-size: 20px;
+.stock-select select {
+    font-family: 'IBM Plex Mono', monospace;
+    background: transparent;
+    border: 1px solid var(--rule);
+    padding: 0.3rem 0.5rem;
+    color: var(--ink);
 }
 
-.logo h1 {
-    font-family: var(--font-pixel);
-    font-size: 36px;
-    font-weight: 700;
-
-    letter-spacing: 1.5px;
-
-    color: #fff;
-
-    text-transform: uppercase;
+main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
+.error-banner {
+    background: var(--paper-deep);
+    border: 1px solid var(--down);
+    color: var(--down);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
 
-/* =========================================================
-   CONTROLS
-   ========================================================= */
+.section {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--rule);
+}
 
-.controls {
+.section:last-child {
+    border-bottom: none;
+}
+
+.section__heading {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.stock-grid {
+    display: block;
+}
+
+.stock-row {
     display: flex;
-    gap: 12px;
-
-    align-items: center;
-
-    min-width: 0;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--rule);
 }
 
-.custom-select select {
-    appearance: none;
+.stock-row:last-child {
+    border-bottom: none;
+}
 
-    background-color: var(--bg-input);
-    color: #fff;
+.stock-row__name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+}
 
-    border: 1px solid var(--border);
+.stock-row__symbol {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-left: 0.4rem;
+}
 
-    padding: 10px 36px 10px 16px;
+.stock-row__price {
+    font-size: 1.05rem;
+}
 
-    font-family: var(--font-mono);
-    font-size: 14px;
+button.action {
+    font-family: 'Work Sans', sans-serif;
     font-weight: 500;
-
-    border-radius: var(--radius);
-
-    outline: none;
-
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 0.65rem 1.4rem;
     cursor: pointer;
-
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23787B86%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-
-    background-repeat: no-repeat;
-    background-position: right 12px top 50%;
-    background-size: 10px auto;
+    font-size: 0.9rem;
 }
 
-.custom-select select:hover {
-    border-color: var(--border-light);
-}
-
-
-/* =========================================================
-   PRIMARY BUTTON
-   ========================================================= */
-
-.btn-primary {
-    background-color: var(--accent);
-    color: #000;
-
-    border: 1px solid var(--accent);
-
-    padding: 10px 24px;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-    letter-spacing: 1px;
-
-    border-radius: var(--radius);
-
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 8px;
-
-    transition: var(--transition);
-
-    min-width: 150px;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background-color: transparent;
-    color: var(--accent);
-}
-
-.btn-primary:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-.btn-primary:disabled {
-    background-color: #111;
-    border-color: #222;
-    color: #666;
-
+button.action:disabled {
+    background: var(--rule);
+    color: var(--muted);
     cursor: not-allowed;
 }
 
-.btn-primary.cooldown {
-    background-color: transparent;
-    border-color: #333;
-    color: #888;
-}
-
-
-/* =========================================================
-   BUTTON LOADER
-   ========================================================= */
-
-.btn-loader {
-    width: 14px;
-    height: 14px;
-
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-
-    border-radius: 50%;
-
-    animation: spin 0.8s linear infinite;
-}
-
-
-/* =========================================================
-   MAIN CONTENT
-   ========================================================= */
-
-.main-content {
-    display: flex;
-    flex-direction: column;
-
-    gap: 24px;
-
-    min-height: 0;
-    min-width: 0;
-
-    width: 100%;
-}
-
-
-/* =========================================================
-   CARDS SECTION
-   ========================================================= */
-
-.cards-section {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 1fr)
-        minmax(0, 1.5fr)
-        minmax(0, 1fr);
-
-    gap: 16px;
-
-    min-width: 0;
-    width: 100%;
-}
-
-.card {
-    background-color: var(--bg-card);
-
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-
-    padding: 20px;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: space-between;
-
-    min-width: 0;
-}
-
-.card-header {
-    font-size: 12px;
-
-    text-transform: uppercase;
-
-    color: var(--text-secondary);
-
-    font-weight: 600;
-
-    letter-spacing: 0.5px;
-
-    margin-bottom: 16px;
-}
-
-
-/* =========================================================
-   DECISION CARD
-   ========================================================= */
-
-.decision-card {
-    border: 1px solid var(--border-light);
-
-    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
-
-    position: relative;
-
-    overflow: hidden;
-}
-
-.decision-card::before {
-    content: '';
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    width: 4px;
-    height: 100%;
-
-    background-color: var(--color-hold);
-
-    transition: var(--transition);
-}
-
-.decision-card[data-decision="BUY"]::before {
-    background-color: var(--color-buy);
-}
-
-.decision-card[data-decision="SELL"]::before {
-    background-color: var(--color-sell);
-}
-
-.decision-value {
-    font-size: 56px;
-
-    font-family: var(--font-pixel);
-    font-weight: 700;
-
-    color: #fff;
-
-    margin-bottom: 4px;
-
-    letter-spacing: 2px;
-
-    line-height: 1;
-}
-
-.decision-meta {
-    font-family: var(--font-mono);
-
-    font-size: 14px;
-
-    color: var(--text-secondary);
-
-    margin-bottom: 12px;
-}
-
-.decision-reason {
-    font-size: 13px;
-
-    color: var(--text-primary);
-
-    background-color: rgba(255,255,255,0.03);
-
-    padding: 12px;
-
-    border-radius: var(--radius);
-
-    border-left: 2px solid var(--text-secondary);
-
-    min-height: 48px;
-
-    overflow-wrap: anywhere;
-
-    min-width: 0;
-}
-
-
-/* =========================================================
-   VALUE COLORS
-   ========================================================= */
-
-.val-buy,
-.val-up {
-    color: var(--color-buy) !important;
-}
-
-.val-sell,
-.val-down {
-    color: var(--color-sell) !important;
-}
-
-.val-hold {
-    color: var(--color-hold) !important;
-}
-
-.bg-buy {
-    border-left-color: var(--color-buy) !important;
-    background-color: var(--color-buy-bg) !important;
-}
-
-.bg-sell {
-    border-left-color: var(--color-sell) !important;
-    background-color: var(--color-sell-bg) !important;
-}
-
-.bg-hold {
-    border-left-color: var(--color-hold) !important;
-    background-color: var(--color-hold-bg) !important;
-}
-
-
-/* =========================================================
-   PREDICTION & SENTIMENT
-   ========================================================= */
-
-.prediction-value {
-    font-size: 56px;
-
-    font-family: var(--font-pixel);
-    font-weight: 700;
-
-    margin-bottom: 4px;
-
-    letter-spacing: 2px;
-
-    line-height: 1;
-}
-
-.prediction-meta {
-    display: flex;
-    justify-content: space-between;
-
-    font-family: var(--font-mono);
-
-    font-size: 13px;
-
-    color: var(--text-secondary);
-}
-
-.sentiment-score {
-    font-family: var(--font-mono);
-
-    font-size: 24px;
-
-    font-weight: 600;
-
-    margin-bottom: 12px;
-}
-
-.sentiment-gauge {
-    height: 6px;
-
-    background-color: var(--bg-input);
-
-    border-radius: 3px;
-
-    position: relative;
-
-    margin-bottom: 8px;
-
-    overflow: hidden;
-}
-
-.gauge-fill {
-    height: 100%;
-
-    background: linear-gradient(
-        90deg,
-        var(--color-sell),
-        var(--color-hold),
-        var(--color-buy)
-    );
-
-    width: 100%;
-
-    position: absolute;
-}
-
-.gauge-marker {
-    position: absolute;
-
-    width: 4px;
-    height: 10px;
-
-    background-color: #fff;
-
-    top: -2px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    border-radius: 1px;
-
-    transition:
-        left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.sentiment-label {
-    font-size: 12px;
-
-    color: var(--text-secondary);
-
-    text-align: right;
-}
-
-
-/* =========================================================
-   ERROR STATE
-   ========================================================= */
-
-.error-banner {
-    background-color: rgba(242, 54, 69, 0.1);
-
-    border: 1px solid rgba(242, 54, 69, 0.3);
-
-    color: var(--color-sell);
-
-    padding: 12px 16px;
-
-    border-radius: var(--radius);
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    font-size: 13px;
-
-    font-weight: 500;
-
-    min-width: 0;
-}
-
-
-/* =========================================================
-   NEWS SECTION
-   ========================================================= */
-
-.news-section {
-    width: 100%;
-    min-width: 0;
-
-    background-color: var(--bg-card);
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius);
-
-    display: flex;
-    flex-direction: column;
-
-    flex-shrink: 0;
-
-    overflow: hidden;
-}
-
-.news-header {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    padding: 16px;
-
-    border-bottom: 1px solid var(--border);
-
-    flex-shrink: 0;
-
-    min-width: 0;
-}
-
-.news-header h2 {
-    font-size: 14px;
-
-    font-weight: 600;
-
-    color: #fff;
-}
-
-.news-subtitle {
-    display: block;
-
-    margin-top: 3px;
-
-    font-size: 11px;
-
-    color: var(--text-muted);
-}
-
-.news-refresh-btn {
-    background: transparent;
-
-    border: 1px solid var(--border);
-
-    color: var(--text-secondary);
-
-    padding: 6px 12px;
-
-    font-family: var(--font-mono);
-
-    font-size: 11px;
-
-    cursor: pointer;
-
-    transition: var(--transition);
-
-    flex-shrink: 0;
-}
-
-.news-refresh-btn:hover {
-    border-color: var(--border-light);
-    color: #fff;
-}
-
-.news-container {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: 12px;
-
-    padding: 16px;
-
-    max-height: 230px;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    min-width: 0;
-}
-
-.news-card {
-    background-color: var(--bg-input);
-
-    border: 1px solid var(--border);
-
-    padding: 14px;
-
-    display: flex;
-    flex-direction: column;
-
-    min-width: 0;
-
-    min-height: 150px;
-
-    transition: var(--transition);
-
-    overflow: hidden;
-}
-
-.news-card:hover {
-    border-color: var(--border-light);
-
-    background-color: var(--bg-card-hover);
-}
-
-.news-card-title {
-    color: var(--text-primary);
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    line-height: 1.4;
-
-    margin-bottom: 8px;
-
-    overflow-wrap: anywhere;
-}
-
-.news-card-content {
-    color: var(--text-secondary);
-
-    font-size: 11px;
-
-    line-height: 1.5;
-
-    margin-bottom: 12px;
-
-    display: -webkit-box;
-
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-
-    overflow: hidden;
-}
-
-.news-card-footer {
-    margin-top: auto;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 8px;
-
-    min-width: 0;
-}
-
-.news-date {
-    color: var(--text-muted);
-
-    font-family: var(--font-mono);
-
-    font-size: 10px;
-
-    min-width: 0;
-}
-
-.news-link {
-    color: var(--text-primary);
-
-    font-size: 10px;
-
-    text-decoration: none;
-
-    border-bottom: 1px solid var(--border-light);
-
-    white-space: nowrap;
-
-    flex-shrink: 0;
-}
-
-.news-link:hover {
-    border-color: #fff;
-}
-
-.news-loading,
-.news-empty,
-.news-error {
-    grid-column: 1 / -1;
-
-    text-align: center;
-
-    padding: 24px;
-
-    color: var(--text-muted);
-
-    font-size: 12px;
-}
-
-
-/* =========================================================
-   BOTTOM SECTION
-   ========================================================= */
-
-/*
- * IMPORTANT FIX
- *
- * minmax(0, ...) prevents the Prediction History
- * table from forcing the entire grid wider than
- * the News section above it.
- */
-
-.bottom-section {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 2fr)
-        minmax(0, 1fr);
-
-    gap: 16px;
-
-    min-height: 400px;
-
-    width: 100%;
-    min-width: 0;
-
-    /*
-     * Prevent grid children from overflowing
-     * because of their intrinsic content width.
-     */
-    overflow: hidden;
-}
-
-
-/*
- * Critical:
- * Grid items default to min-width: auto.
- * Setting min-width: 0 allows them to shrink
- * inside the available grid width.
- */
-
-.bottom-section > .chart-container,
-.bottom-section > .history-container {
-    min-width: 0;
-    width: 100%;
-}
-
-
-/* =========================================================
-   CHART + HISTORY CONTAINERS
-   ========================================================= */
-
-.chart-container,
-.history-container {
-    background-color: var(--bg-card);
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius);
-
-    display: flex;
-    flex-direction: column;
-
-    position: relative;
-
-    min-height: 400px;
-
-    /*
-     * Prevent content from visually escaping
-     * the container.
-     */
-    min-width: 0;
-
-    max-width: 100%;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   CHART / HISTORY HEADERS
-   ========================================================= */
-
-.chart-header,
-.history-header {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    padding: 16px;
-
-    border-bottom: 1px solid var(--border);
-
-    flex-shrink: 0;
-
-    min-width: 0;
-}
-
-.chart-header h2,
-.history-header h2 {
-    font-size: 14px;
-
-    font-weight: 600;
-
-    color: #fff;
-}
-
-
-/* =========================================================
-   CHART CONTROLS
-   ========================================================= */
-
 .chart-controls {
     display: flex;
-
-    gap: 4px;
-
-    flex-shrink: 0;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
 }
 
-.chart-btn {
+.chart-controls button {
     background: transparent;
-
-    border: 1px solid transparent;
-
-    color: var(--text-secondary);
-
-    padding: 4px 10px;
-
-    font-size: 12px;
-
-    border-radius: var(--radius);
-
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
     cursor: pointer;
-
-    transition: var(--transition);
+    font-family: 'Work Sans', sans-serif;
 }
 
-.chart-btn:hover {
-    color: var(--text-primary);
+.chart-controls button.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
 }
 
-.chart-btn.active {
-    background-color: var(--bg-input);
-
-    border-color: var(--border-light);
-
-    color: #fff;
+#mm-chart {
+    border: 1px solid var(--rule);
 }
 
+.result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
 
-/* =========================================================
-   TRADINGVIEW CHART
-   ========================================================= */
+.result-box {
+    border: 1px solid var(--rule);
+    padding: 1.1rem;
+}
 
-.tv-chart {
-    flex-grow: 1;
+.result-box__label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
 
-    width: 100%;
+.result-box__value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    margin-top: 0.3rem;
+}
 
-    min-height: 350px;
+.result-box__value.up {
+    color: var(--up);
+}
 
+.result-box__value.down {
+    color: var(--down);
+}
+
+.result-box__value.hold {
+    color: var(--neutral);
+}
+
+.result-box__sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+}
+
+.gauge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.gauge__track {
+    flex: 1;
+    height: 8px;
+    background: var(--rule);
     position: relative;
-
-    min-width: 0;
-
-    overflow: hidden;
 }
 
-
-/* =========================================================
-   PREDICTION HISTORY
-   ========================================================= */
-
-.table-wrapper {
-    flex-grow: 1;
-
-    width: 100%;
-
-    min-width: 0;
-    max-width: 100%;
-
-    overflow-y: auto;
-    overflow-x: auto;
-
-    /*
-     * Prevent the table wrapper from expanding
-     * the history grid item.
-     */
-    flex-shrink: 1;
+.gauge__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: var(--ink);
 }
-
-
-/*
- * IMPORTANT:
- * Fixed table layout prevents long text/content
- * from expanding the Prediction History container.
- */
 
 table {
     width: 100%;
-
-    max-width: 100%;
-
     border-collapse: collapse;
-
-    font-size: 12px;
-
-    table-layout: fixed;
-
-    min-width: 0;
+    font-size: 0.85rem;
 }
 
-
-/* =========================================================
-   TABLE HEADER
-   ========================================================= */
+th,
+td {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--rule);
+}
 
 th {
-    text-align: left;
-
-    padding: 12px 16px;
-
-    color: var(--text-secondary);
-
+    color: var(--muted);
     font-weight: 500;
-
-    position: sticky;
-
-    top: 0;
-
-    background-color: var(--bg-card);
-
-    border-bottom: 1px solid var(--border);
-
-    z-index: 2;
-
-    /*
-     * Prevent header content from forcing
-     * the table wider.
-     */
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-
-/* =========================================================
-   TABLE CELLS
-   ========================================================= */
-
-td {
-    padding: 12px 16px;
-
-    border-bottom: 1px solid var(--bg-input);
-
-    font-family: var(--font-mono);
-
-    /*
-     * Critical for long reason strings.
-     */
-    min-width: 0;
-
-    max-width: 0;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    vertical-align: middle;
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
 }
 
-tbody tr:hover {
-    background-color: var(--bg-card-hover);
+.news-item {
+    border: 1px solid var(--rule);
+    padding: 1rem;
 }
 
+.news-item__headline {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+}
 
-/* =========================================================
-   EMPTY TABLE
-   ========================================================= */
+.news-item__meta {
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
 
-.empty-row td {
+.news-item__body {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.empty-state {
+    color: var(--muted);
+    font-style: italic;
+    padding: 1rem 0;
+}
+
+footer {
     text-align: center;
-
-    color: var(--text-muted);
-
-    font-family: var(--font-main);
-
-    padding: 32px;
-
-    max-width: none;
+    color: var(--muted);
+    font-size: 0.75rem;
+    padding: 2rem;
 }
 
-
-/* =========================================================
-   PREDICTION HISTORY REASON
-   ========================================================= */
-
-.expandable-reason {
-    font-family: var(--font-main);
-
-    font-size: 11px;
-
-    color: var(--text-secondary);
-
-    max-width: 150px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    cursor: help;
-
-    display: block;
-}
-
-
-/* =========================================================
-   UTILITIES
-   ========================================================= */
-
-.hidden {
-    display: none !important;
-}
-
-
-/* =========================================================
-   SPINNER
-   ========================================================= */
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+@media (max-width: 640px) {
+    main {
+        padding: 1.25rem;
     }
-}
 
-
-/* =========================================================
-   OVERLAY LOADER
-   ========================================================= */
-
-.overlay-loader {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    background: rgba(19, 23, 34, 0.7);
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    z-index: 10;
-}
-
-.spinner {
-    width: 32px;
-    height: 32px;
-
-    border: 3px solid rgba(255,255,255,0.1);
-
-    border-top-color: var(--accent);
-
-    border-radius: 50%;
-
-    animation: spin 1s linear infinite;
-}
-
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-base);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border-light);
-
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
-}
-
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-    .cards-section {
+    .result-grid {
         grid-template-columns: 1fr;
     }
 
-    .news-container {
-        grid-template-columns: 1fr;
-
-        max-height: none;
+    .masthead {
+        padding: 1rem 1.25rem 0.6rem;
     }
 
-    .bottom-section {
-        grid-template-columns: 1fr;
-
-        min-height: auto;
-
-        overflow: visible;
-    }
-
-    .chart-container,
-    .history-container {
-        min-height: 400px;
-
-        width: 100%;
-        max-width: 100%;
-    }
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-    .app-container {
-        width: 100%;
-
-        padding: 16px;
-
-        gap: 16px;
-    }
-
-    .top-section {
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 16px;
-    }
-
-    .controls {
-        width: 100%;
-
-        flex-direction: column;
-    }
-
-    .custom-select,
-    .custom-select select,
-    .btn-primary {
-        width: 100%;
-    }
-
-    .logo h1 {
-        font-size: 30px;
-    }
-
-    .decision-value,
-    .prediction-value {
-        font-size: 48px;
-    }
-
-    .news-container {
-        grid-template-columns: 1fr;
-    }
-
-    .history-container {
-        overflow: hidden;
-    }
-
-    .table-wrapper {
-        overflow-x: auto;
-    }
-
-    table {
-        min-width: 500px;
+    .nav-row {
+        padding: 0.6rem 1.25rem;
     }
 }

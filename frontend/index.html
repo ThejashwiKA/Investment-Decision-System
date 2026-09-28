@@ -1,183 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MarketMind - Fintech AI Prediction</title>
-    <meta name="description" content="Premium AI-powered stock prediction and analysis platform.">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MarketMind — Home</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+    <div id="mm-nav"></div>
+    <main>
+        <div id="mm-error" class="error-banner" hidden></div>
 
-    <div class="app-container">
+        <section class="section">
+            <h1 class="section__heading">Today's Watchlist</h1>
+            <p style="color: var(--muted); margin-bottom: 1rem;">Latest close for each tracked stock. Select one to open
+                its full analysis.</p>
+            <div id="stock-list" class="stock-grid"></div>
+        </section>
 
-        <header class="top-section">
-            <div class="logo">
-                <span class="logo-icon">▲</span>
-                <h1>MarketMind</h1>
+        <section class="section">
+            <h2 class="section__heading">What MarketMind Does</h2>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:1.5rem;">
+                <div>
+                    <h3 class="serif" style="font-size:1.05rem; margin-bottom:0.4rem;">Price History</h3>
+                    <p style="color:var(--muted); font-size:0.9rem;">Candlestick, line and area charts built from stored
+                        historical prices.</p>
+                </div>
+                <div>
+                    <h3 class="serif" style="font-size:1.05rem; margin-bottom:0.4rem;">LSTM Prediction</h3>
+                    <p style="color:var(--muted); font-size:0.9rem;">A trained model estimates whether the next move is
+                        up or down, with a confidence score.</p>
+                </div>
+                <div>
+                    <h3 class="serif" style="font-size:1.05rem; margin-bottom:0.4rem;">Sentiment &amp; Decision</h3>
+                    <p style="color:var(--muted); font-size:0.9rem;">FinBERT scores recent news; prediction and
+                        sentiment combine into a BUY, SELL or HOLD call.</p>
+                </div>
             </div>
-
-            <div class="controls">
-                <div class="custom-select">
-                    <select id="stockSelector">
-                        <option value="AAPL">AAPL - Apple Inc.</option>
-                        <option value="GOOGL">GOOGL - Alphabet Inc.</option>
-                        <option value="MSFT">MSFT - Microsoft Corp.</option>
-                        <option value="AMZN">AMZN - Amazon.com Inc.</option>
-                    </select>
-                </div>
-
-                <button id="analyzeBtn" class="btn-primary">
-                    <span class="btn-text">Analyze / Predict</span>
-                    <span class="btn-loader hidden"></span>
-                </button>
-            </div>
-        </header>
-
-        <main class="main-content">
-
-            <section class="cards-section">
-
-                <div class="card prediction-card" id="predictionCard">
-                    <div class="card-header">Prediction</div>
-
-                    <div class="card-body">
-                        <div class="prediction-value" id="predValue">--</div>
-
-                        <div class="prediction-meta">
-                            <span class="confidence" id="predConfidence">--%</span>
-                            <span class="timestamp" id="predTimestamp">--:--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card decision-card" id="decisionCard">
-                    <div class="card-header">Action Recommended</div>
-
-                    <div class="card-body">
-                        <div class="decision-value" id="decisionValue">HOLD</div>
-
-                        <div class="decision-meta">
-                            <span class="confidence" id="decisionConfidence">--% Confidence</span>
-                        </div>
-
-                        <div class="decision-reason" id="decisionReason">
-                            Awaiting analysis...
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card sentiment-card" id="sentimentCard">
-                    <div class="card-header">Market Sentiment</div>
-
-                    <div class="card-body">
-                        <div class="sentiment-score" id="sentimentScore">--</div>
-
-                        <div class="sentiment-gauge">
-                            <div class="gauge-fill" id="gaugeFill"></div>
-                            <div class="gauge-marker"></div>
-                        </div>
-
-                        <div class="sentiment-label" id="sentimentLabel">Neutral</div>
-                    </div>
-                </div>
-
-            </section>
-
-            <div id="errorState" class="error-banner hidden">
-                <span class="error-icon">⚠️</span>
-                <span id="errorMessage">An error occurred while fetching data.</span>
-            </div>
-
-            <section class="news-section">
-
-                <div class="news-header">
-                    <div>
-                        <h2>Latest Market News</h2>
-                        <span class="news-subtitle">Live news collected from market sources</span>
-                    </div>
-
-                    <button id="refreshNewsBtn" class="news-refresh-btn">
-                        Refresh
-                    </button>
-                </div>
-
-                <div id="newsContainer" class="news-container">
-                    <div class="news-loading">
-                        Loading latest news...
-                    </div>
-                </div>
-
-            </section>
-
-            <section class="bottom-section">
-
-                <div class="chart-container">
-
-                    <div class="chart-header">
-                        <h2>Price Action</h2>
-
-                        <div class="chart-controls">
-                            <button class="chart-btn active" data-type="line">Line</button>
-                            <button class="chart-btn" data-type="area">Area</button>
-                            <button class="chart-btn" data-type="candlestick">Candle</button>
-                        </div>
-                    </div>
-
-                    <div id="priceChart" class="tv-chart"></div>
-
-                    <div id="chartLoader" class="overlay-loader hidden">
-                        <div class="spinner"></div>
-                    </div>
-
-                </div>
-
-                <div class="history-container">
-
-                    <div class="history-header">
-                        <h2>Prediction History</h2>
-                    </div>
-
-                    <div class="table-wrapper">
-
-                        <table id="historyTable">
-
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Prediction</th>
-                                    <th>Decision</th>
-                                    <th>Conf.</th>
-                                    <th>Reason</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="historyBody">
-                                <tr class="empty-row">
-                                    <td colspan="5">No history available</td>
-                                </tr>
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
-
-    <script src="app.js" defer></script>
-
+        </section>
+    </main>
+    <footer>MarketMind — Spring Boot · FastAPI · PostgreSQL</footer>
+    <script src="shared.js"></script>
+    <script src="home.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MarketMind — Analysis</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+<div id="mm-nav"></div>
+<main>
+  <div id="mm-error" class="error-banner" hidden></div>
+
+  <section class="section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:0.75rem;">
+      <h1 id="mm-title" class="section__heading">Analysis</h1>
+      <button id="mm-predict-btn" class="action">Analyze &amp; Predict</button>
+    </div>
+    <div class="chart-controls">
+      <button data-type="candlestick" class="active">Candlestick</button>
+      <button data-type="line">Line</button>
+      <button data-type="area">Area</button>
+    </div>
+    <div id="mm-chart" style="height:380px;"></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section__heading">Latest Call</h2>
+    <div class="result-grid">
+      <div class="result-box">
+        <div class="result-box__label">Prediction</div>
+        <div id="pred-value" class="result-box__value">—</div>
+        <div id="pred-sub" class="result-box__sub">Run an analysis to see the model's call.</div>
+      </div>
+      <div class="result-box">
+        <div class="result-box__label">Decision</div>
+        <div id="decision-value" class="result-box__value">—</div>
+        <div id="decision-sub" class="result-box__sub">Combines prediction and sentiment.</div>
+      </div>
+    </div>
+    <div class="result-box" style="margin-top:1.5rem;">
+      <div class="result-box__label">Sentiment</div>
+      <div class="gauge">
+        <div class="gauge__track"><div id="sentiment-fill" class="gauge__fill" style="width:0%"></div></div>
+        <span id="sentiment-value" class="mono">—</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section__heading">Prediction History</h2>
+    <table id="history-table">
+      <thead><tr><th>Time</th><th>Prediction</th><th>Confidence</th><th>Sentiment</th><th>Decision</th></tr></thead>
+      <tbody id="history-body"></tbody>
+    </table>
+    <div id="history-empty" class="empty-state">No predictions run yet this session.</div>
+  </section>
+</main>
+<footer>MarketMind — Spring Boot · FastAPI · PostgreSQL</footer>
+<script src="shared.js"></script>
+<script src="analysis.js"></script>
+</body>
+</html>
