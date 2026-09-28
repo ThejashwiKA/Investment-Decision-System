@@ -4,8 +4,12 @@ const stockId = getSelectedStockId();
 const stock = getStock(stockId);
 document.getElementById("mm-title").textContent = `Analysis — ${stock.symbol}`;
 
+const ML_BASE = "http://127.0.0.1:8000";
+const LIVE_POLL_MS = 5000; // poll every 5 seconds (60 calls/min is the free limit)
+
 let chart, series;
 let candles = [];
+let liveTimer = null;
 
 // Field names below are guesses at the GET /price-history/{stockId} shape —
 // adjust to match your actual PriceHistory DTO (date/open/high/low/close).
@@ -22,28 +26,107 @@ function toChartData(history) {
         .sort((a, b) => (a.time > b.time ? 1 : -1));
 }
 
-function buildChart() {
+// --- Live mode ---
+
+let liveCandle = null;
+
+function stopLive() {
+    if (liveTimer) {
+        clearInterval(liveTimer);
+        liveTimer = null;
+    }
+    liveCandle = null;
+    document.getElementById("live-status").textContent = "";
+}
+
+async function drawLive() {
+    try {
+        const res = await fetch(`${ML_BASE}/live-chart/${stockId}`);
+        const bars = await res.json();
+        if (!liveTimer) return; // user switched away while this was loading
+        if (!Array.isArray(bars)) throw new Error(bars.error || "No live data");
+
+        // Shift timestamps so the chart shows your local time instead of UTC
+        const offset = new Date().getTimezoneOffset() * 60;
+        series.setData(bars.map((b) => ({ ...b, time: b.time - offset })));
+
+        showError(null);
+        document.getElementById("live-status").textContent =
+            `Live · updated ${new Date().toLocaleTimeString()}`;
+    } catch (err) {
+        showError(`Live data unavailable: ${err.message}`);
+    }
+}
+
+// Finnhub quotes (via ml-service /quote) built into 1-minute candles
+async function pollQuote() {
+    const status = document.getElementById("live-status");
+    try {
+        const res = await fetch(`${ML_BASE}/quote/${stockId}`);
+        const q = await res.json();
+        if (!liveTimer) return; // user switched away while this was loading
+        if (q.error) throw new Error(q.error);
+
+        // If the last trade is more than 5 minutes old, the market is closed
+        const ageSec = Date.now() / 1000 - q.time;
+        if (ageSec > 300) {
+            status.textContent =
+                `Market closed · last trade ${new Date(q.time * 1000).toLocaleString()} · $${q.price.toFixed(2)}`;
+            return;
+        }
+
+        // Start of the current minute, shifted to local time for display
+        const minute = Math.floor(Date.now() / 60000) * 60;
+        const time = minute - new Date().getTimezoneOffset() * 60;
+
+        if (liveCandle && liveCandle.time === time) {
+            liveCandle.high = Math.max(liveCandle.high, q.price);
+            liveCandle.low = Math.min(liveCandle.low, q.price);
+            liveCandle.close = q.price;
+        } else {
+            liveCandle = { time, open: q.price, high: q.price, low: q.price, close: q.price };
+        }
+        series.update(liveCandle);
+
+        showError(null);
+        status.textContent = `Live · $${q.price.toFixed(2)} · ${new Date().toLocaleTimeString()}`;
+    } catch (err) {
+        showError(`Live data unavailable: ${err.message}`);
+    }
+}
+
+function startLive() {
+    stopLive();
+    liveTimer = setInterval(pollQuote, LIVE_POLL_MS);
+    pollQuote();
+}
+
+// --- Chart ---
+
+function buildChart(type) {
+    stopLive();
     const el = document.getElementById("mm-chart");
+    if (chart) chart.remove();
+
     chart = LightweightCharts.createChart(el, {
         layout: { background: { color: "#0B0E14" }, textColor: "#E6E8EB", fontFamily: "IBM Plex Mono, monospace" },
         grid: { vertLines: { color: "#1B2028" }, horzLines: { color: "#1B2028" } },
         rightPriceScale: { borderColor: "#262B33" },
-        timeScale: { borderColor: "#262B33" },
+        timeScale: { borderColor: "#262B33", timeVisible: type === "live" },
         width: el.clientWidth,
         height: 380,
     });
-    setSeries("candlestick");
-    window.addEventListener("resize", () => chart.applyOptions({ width: el.clientWidth }));
+    setSeries(type);
 }
 
 function setSeries(type) {
-    if (series) chart.removeSeries(series);
-    if (type === "candlestick") {
+    if (type === "candlestick" || type === "live") {
         series = chart.addCandlestickSeries({
             upColor: "#22C55E", downColor: "#EF4444", borderVisible: false,
             wickUpColor: "#22C55E", wickDownColor: "#EF4444",
         });
-        series.setData(candles);
+        if (type === "live") startLive();
+        else series.setData(candles);
     } else if (type === "line") {
         series = chart.addLineSeries({ color: "#E6E8EB", lineWidth: 2 });
         series.setData(candles.map((c) => ({ time: c.time, value: c.close })));
@@ -55,11 +138,15 @@ function setSeries(type) {
     }
 }
 
+window.addEventListener("resize", () => {
+    if (chart) chart.applyOptions({ width: document.getElementById("mm-chart").clientWidth });
+});
+
 document.querySelectorAll(".chart-controls button").forEach((btn) => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".chart-controls button").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-        setSeries(btn.dataset.type);
+        buildChart(btn.dataset.type);
     });
 });
 
@@ -67,7 +154,7 @@ async function loadChart() {
     try {
         const history = await apiGet(`/price-history/${stockId}`);
         candles = toChartData(history);
-        buildChart();
+        buildChart("candlestick");
     } catch (err) {
         showError(`Could not load price history: ${err.message}`);
     }

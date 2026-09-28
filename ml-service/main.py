@@ -1,3 +1,6 @@
+import os
+
+import requests
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -15,6 +18,7 @@ app.add_middleware(
 )
 
 SYMBOL_MAP = {1: "AAPL", 4: "GOOGL", 5: "MSFT", 6: "AMZN"}
+FINNHUB_KEY = os.getenv("FINNHUB_API_KEY", "")
 
 
 class PredictionRequest(BaseModel):
@@ -79,3 +83,49 @@ def get_live_price(stock_id: int):
         "low": float(last["Low"]),
         "close": float(last["Close"]),
     }
+
+
+@app.get("/live-chart/{stock_id}")
+def get_live_chart(stock_id: int):
+    symbol = SYMBOL_MAP.get(stock_id)
+    if not symbol:
+        return {"error": "Unknown stock ID"}
+
+    data = yf.Ticker(symbol).history(period="5d", interval="5m")
+    if data.empty:
+        return {"error": "No data available"}
+
+    bars = []
+    for ts, row in data.iterrows():
+        bars.append({
+            "time": int(ts.timestamp()),
+            "open": float(row["Open"]),
+            "high": float(row["High"]),
+            "low": float(row["Low"]),
+            "close": float(row["Close"]),
+        })
+    return bars
+
+
+@app.get("/quote/{stock_id}")
+def get_quote(stock_id: int):
+    symbol = SYMBOL_MAP.get(stock_id)
+    if not symbol:
+        return {"error": "Unknown stock ID"}
+    if not FINNHUB_KEY:
+        return {"error": "FINNHUB_API_KEY is not set"}
+
+    r = requests.get(
+        "https://finnhub.io/api/v1/quote",
+        params={"symbol": symbol, "token": FINNHUB_KEY},
+        timeout=10,
+    )
+    if r.status_code != 200:
+        return {"error": f"Finnhub returned {r.status_code}"}
+
+    q = r.json()
+    if not q.get("c"):
+        return {"error": "No price returned"}
+
+    # c = current price, t = time of the last trade (unix seconds)
+    return {"price": q["c"], "time": q["t"]}
